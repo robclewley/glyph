@@ -3,11 +3,11 @@
 from distutils.core import setup
 
 setup(name='glyph',
-      version='2.5.2',
+      version='2.5.2rc',
       author='Chandler Armstrong',
       author_email='omni.armstrong@gmail.com',
       url='http://code.google.com/p/glyph/',
-      description='pygame typesetting library',
+      description='Pygame typesetting library',
       download_url='http://code.google.com/p/glyph/downloads/list',
       classifiers=['Development Status :: 5 - Production/Stable',
                    'License :: OSI Approved :: GNU General Public License (GPL)',
