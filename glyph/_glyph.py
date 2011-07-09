@@ -43,7 +43,7 @@ def _iswhitespace(char):
     # returns true if char is whitespace, else returns false
     whitespace = re.compile('\s+') # re to detect whitespace
     if not char: return True
-    if isinstance(char, str):
+    if isinstance(char, str) or isinstance(char, unicode):
         assert len(char) == 1
         if whitespace.search(char): return True
         return False
@@ -95,18 +95,23 @@ def _token_builder(interpreted_txt):
         for char in chars:
             if not iswhitespace(char): token_iswhitespace = False
 
-            if char == '\n': char = Surface((0, font.get_linesize()))
+            if char == '\n':
+              char = Surface((0, font.get_linesize()))
 
-            if isinstance(char, str):
+            if isinstance(char, unicode):
                 if iswhitespace(char): char = ' '
                 strbuff.append(char)
-
+            elif isinstance(char, str):
+                if iswhitespace(char): char = ' '
+                strbuff.append(char)            
             else:
-                if strbuff: surfbuff.append(font.render(''.join(strbuff), 0, color, bkg))
+                if strbuff:
+                  surfbuff.append(font.render(''.join(strbuff), 1, color, bkg))
                 surfbuff.append(char)
                 strbuff = []
-
-        if strbuff: surfbuff.append(font.render(''.join(strbuff), 0, color, bkg))
+        
+        if strbuff:
+          surfbuff.append(font.render(''.join(strbuff), 1, color, bkg))
 
         if surfbuff:
             # calculate link rects
@@ -126,8 +131,7 @@ def _token_builder(interpreted_txt):
     # given token height, modify link rect y
     for rect in [rect for v in links.values() for rect in v]:
         rect.y += (height - rect.h)
-
-    token_str = ''.join(str(char) for (envs, chars) in interpreted_txt
+    token_str = ''.join(unicode(char) for (envs, chars) in interpreted_txt
                         for char in chars)
 
     return Token((width, height), links, surfs, token_iswhitespace, token_str)
@@ -266,6 +270,8 @@ class Main(Sprite):
           font-- font
         """
         self.image = Surface(rect.size)
+        self.image.fill(kwargs['bkg'])
+        self.image.set_alpha(255)
         self.rect = rect
         self.spacing = kwargs['spacing']
         self.links = defaultdict(list)
@@ -389,9 +395,7 @@ class Main(Sprite):
             else: # a normal, string, character
                 charbuff.append(char)
                 prevchar = char
-
         if charbuff: interpreted_txt.append((dict(envs), charbuff))
-
         return interpreted_txt
 
 
@@ -420,7 +424,6 @@ class Main(Sprite):
             if charbuff:
                 _interpreted_txt.append((envs, charbuff))
                 charbuff = []
-
         if _interpreted_txt: yield token_builder(_interpreted_txt)
 
 
@@ -446,7 +449,7 @@ class Main(Sprite):
             # rect area, if not, append line without token, reinitialize line
             # with token
             line.append(token)
-            if str(token) == '\n':
+            if unicode(token) == '\n':
                 # don't justify a line that would not wrap
                 if justify == 'justified': _justify = 'left'
                 else: _justify = justify
