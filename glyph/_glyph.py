@@ -272,6 +272,7 @@ class Main(Sprite):
         self.image = Surface(rect.size)
         self.image.fill(kwargs['bkg'])
         self.image.set_alpha(255)
+        self._bkg = kwargs['bkg']
         self.rect = rect
         self.spacing = kwargs['spacing']
         self.links = defaultdict(list)
@@ -534,6 +535,7 @@ class Main(Sprite):
         """
         rect = self.rect
         self.image = Surface(rect.size)
+        self.image.fill(self._bkg)
         self._dest = Rect(0, 0, 0, 0)
         self.links = defaultdict(list)
         surface_dest.blit(background, rect, rect)
