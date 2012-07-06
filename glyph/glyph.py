@@ -18,7 +18,7 @@ from pygame import Surface
 from pygame.transform import scale
 from pygame.locals import *
 
-from ._editor import Main as Editor
+from .editor import Editor
 
 
 

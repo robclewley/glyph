@@ -177,6 +177,11 @@ class Editor(object):
         image.blit(line.image, line.rect)
 
 
+    def redraw(self):
+        image, lines = self.image, self._lines
+        for line in lines: image.blit(line.image, line.rect)
+
+
     def input(self, event):
         """
         accept a user KEYDOWN event and add the text associated with the
@@ -198,7 +203,7 @@ class Editor(object):
 
             # handle cursor navigation
             if event.key in DIRECTION_KEYS:
-                draw_line(l)
+                draw_line(l) #to clear the cursor?
                 if event.key == K_UP:
                     if l > 0:
                         pixel = (font.size(''.join(txt[wraps[l]:k]))[0],

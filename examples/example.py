@@ -308,7 +308,9 @@ class Main():
                 if ev.type == MOUSEBUTTONDOWN:
                     if link:
                         if link == 'editor': start_editor()
-                        elif link in editors: editor = editors[link]
+                        elif link in editors:
+                            if editor: editor.redraw() #clear the cursor
+                            editor = editors[link]
                         else:
                             glyph.clear(SCREEN, BKGSCREEN)
                             glyph.input(PAGES[link], justify = 'justified')
@@ -321,7 +323,7 @@ class Main():
                     if ev.key == K_ESCAPE: exit()
                     elif editor: editor.input(ev)
 
-            if editor: #if it has editors glyph must be updated each loop
+            if editor: #if it has editors, glyph must be updated each loop
                 cursor = editor.get_cursor()
                 editor.image.fill((255, 205, 0), cursor)
                 glyph.update()
