@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='glyph',
-      version='2.5.4rc',
+      version='2.6.0b',
       author='Chandler Armstrong',
       author_email='omni.armstrong@gmail.com',
       url='http://code.google.com/p/glyph/',

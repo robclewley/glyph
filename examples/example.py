@@ -4,6 +4,7 @@ from os import chdir
 from os.path import dirname
 from glyph import Editor, Glyph, Macros
 from pygame import display
+from pygame import draw
 from pygame import event
 from pygame.font import Font
 from pygame import image
@@ -16,12 +17,19 @@ pygame.init()
 
 # path constants
 DIRNAME = os.path.join(dirname(__file__), "resources",)
+P_REG = os.path.join(DIRNAME, "font", "silkscreen.ttf")
+P_BOLD = os.path.join(DIRNAME, "font", "silkscreen_bold.ttf")
 
 
 # screen constants
 SCREEN_SIZE = (800, 600)
 SCREEN = display.set_mode(SCREEN_SIZE)
 
+
+# colors
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
 
 # image constants
 BKGSCREEN = image.load(os.path.join(DIRNAME, "img", "bkgscreen.tga"))
@@ -160,7 +168,7 @@ this syntax is a little unwieldy, and is making it difficult to read the actual 
 
     'macros' : """macros are used to abbreviate the declarations and argument lists of environments.  setting macros can make the text and mini-language much easier to read and work with.  to initialize a macro, add a key-value pair to the glyph.Macro dictionary.  the key of the pair will be the abbreviation used to call the macro, and the value will be a tuple containing the environment declaration and arguments.
 /n
-here are som example macros:
+here are some example macros:
 /n
 /space{10}glyph.Macro['b'] = ('font', Font(silkscreen_bold, 8))
 /n
@@ -198,7 +206,8 @@ these are the environment types offered in this version of glyph:
 /space{20}R, G, B are the red, green, blue values, respectively.
 /n
 /space{10}link linkname
-/space{20}linkname is the name of the link, and will serve as the key for all the rects associated with the link
+/space{20}linkname is the name of the link, and will serve as the key for all the rects associated with the
+/space{20}link
 /n
 NOTE: pathnames should use the slash ('//') character as separators.  glyph will convert separators to the system appropriate form.
 /n
@@ -210,16 +219,19 @@ environments allow users to manipulate most of the aspects of pygame's font libr
 /n
 the following are the functions supported by the glyph minilanguage
 /n
-/space{10}special characters in the glyph minilanguage must be preceeded by a slash.  similarly, special characters like newlines are indicated with the slash in glyph
+/space{10}special characters in the glyph minilanguage must be preceeded by a slash.  similarly, special
+/space{10}characters like newlines are indicated with the slash in glyph
 /space{20}////
 /space{20}///{
 /space{20}//n
 /n
 /space{10}//space/{spacesize/}
-/space{20}spacesize is the size of the space in pixels.  this will insert blank space within the text.  the space will be colored to match the current environment
+/space{20}spacesize is the size of the space in pixels.  this will insert blank space within the text.  the space
+/space{20}will be colored to match the current environment
 /n
 /space{10}//img/{loc/}
-/space{20}loc is the loation of the image file.  any image format supported by pygame's image library can be loaded.
+/space{20}loc is the loation of the image file.  any image format supported by pygame's image library can be
+/space{20}loaded.
 /space{20}FUTURE: a rescale argument that will be used to rescale the image to the given dimensions.
 /n
 just as with environments, functions may be called from entries in the glyph.Macro dictionary.  insert the macro name, and then the item that the function would normally return.  for example:
@@ -236,6 +248,24 @@ the line should produce something like this:
 /n
 /space{10}to restore health, use a red potion /red_pot{}.
 /n
+one final feature glyph offers is fillable text.  To learn how to add fillable text to glyph objects, click {link fillable_text; {green; here}}.
+""",
+
+    'fillable_text' : """fillable text are editor objects inserted within the text of a glyph object.  fillable text can be used to permit users to enter data into a typeset glyph documents, and the data can be accessed from the glyph.editors attribute.  try entering some data into the fillable texts below:
+/n
+First Name: {editor first_name, 100; Omni}
+/n
+Last Name: {editor last_name, 100; Armstrong}
+/n
+hobbies: {editor hobbies, 500; programming, biking, gaming}
+/n
+fillable texts are technically environments (despite that they are not text attrtibutes but surfaces, which would generally be a function).  fillable texts are inserted with the following syntax:
+/space{10}/{editor name, width; default_text/}
+/space{10}'name' will the key where the editor may be accessed from glyph.editors.
+/space{10}w is the the width of the fillable text.  height will be set from the surrounding line height.
+/space{10}the font, color and background color of the editor are set from the default values of the glyph
+/space{20}object.
+/n
 that's everything, and this is the end of the glyph demo.  thanks for trying it out.  glyph aims to be pygame's premier text processing library, if you have any questions, comments, concerns, or suggestions, please add them as a comment to glyph's pygame page.
 """}
 
@@ -246,12 +276,13 @@ class Main():
 
     def __init__(self):
         self.glyph = Glyph(CLIP, **DEFAULT)
-        Macros['b'] = ('font', Font(os.path.join(DIRNAME, "font", "silkscreen_bold.ttf"), 8))
-        Macros['big'] = ('font', Font(os.path.join(DIRNAME, "font", "silkscreen.ttf"), 16))
-        Macros['BIG'] = ('font', Font(os.path.join(DIRNAME, "font", "silkscreen_bold.ttf"), 16))
-        Macros['red'] = ('color', (255, 0, 0))
-        Macros['green'] = ('color', (0, 255, 0))
-        Macros['bkg_blu'] = ('bkg', (0, 0, 255))
+
+        Macros['b'] = ('font', Font(P_BOLD, 8))
+        Macros['big'] = ('font', Font(P_REG, 16))
+        Macros['BIG'] = ('font', Font(P_BOLD, 16))
+        Macros['red'] = ('color', RED)
+        Macros['green'] = ('color', GREEN)
+        Macros['bkg_blu'] = ('bkg', BLUE)
         Macros['red_pot'] = REDPOT
 
         self.editor = Editor(EDITOR_CLIP, **DEFAULT)
@@ -262,6 +293,8 @@ class Main():
         chdir(DIRNAME)
         glyph = self.glyph
         start_editor = self.start_editor
+        editor = None
+        editors = glyph.editors
         glyph_rect = glyph.rect
         glyph.input(PAGES['0'], justify = 'justified')
         glyph.update()
@@ -275,11 +308,24 @@ class Main():
                 if ev.type == MOUSEBUTTONDOWN:
                     if link:
                         if link == 'editor': start_editor()
+                        elif link in editors: editor = editors[link]
                         else:
                             glyph.clear(SCREEN, BKGSCREEN)
                             glyph.input(PAGES[link], justify = 'justified')
                             glyph.update()
-                if ev.type == KEYDOWN: exit()
+                            for _editor in glyph.editors.values():
+                                draw.rect(glyph.image, GREEN,
+                                          _editor.rect.inflate(2, 2), 1)
+
+                if ev.type == KEYDOWN:
+                    if ev.key == K_ESCAPE: exit()
+                    elif editor: editor.input(ev)
+
+            if editor: #if it has editors glyph must be updated each loop
+                cursor = editor.get_cursor()
+                editor.image.fill((255, 205, 0), cursor)
+                glyph.update()
+
             SCREEN.blit(glyph.image, glyph_rect)
             display.update()
 
