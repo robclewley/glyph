@@ -9,5 +9,5 @@ examples\resources\img\bkgscreen.tga
 examples\resources\img\blu_pot.tga
 examples\resources\img\red_pot.tga
 glyph\__init__.py
-glyph\_editor.py
-glyph\_glyph.py
+glyph\editor.py
+glyph\glyph.py

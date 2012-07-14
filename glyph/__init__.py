@@ -106,6 +106,5 @@ see the example folder, provided with the source distribution, for an example sc
 
 
 
-from .glyph import Glyph
-from .glyph import Macros
-from .editor import Editor
+from .glyph import Glyph, GlyphGroup, Macros
+from .editor import Editor, EditorGroup
