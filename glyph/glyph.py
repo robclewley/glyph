@@ -328,7 +328,7 @@ class Glyph(object):
         # return (environment type, environment) tuple (e.g (font, Font object))
 
         # re to get env arguments (arguments may be paths and contain \ or /)
-        r = re.compile('(\w+)(?:\s+([\w\s\.,=\\\\/]+))?\s*;')
+        r = re.compile('(\w+)\s+(((\"|\').*?(\"|\'))|(.*?;))')
         charbuffer = ''
         # _txt_ is a generator, so iterating consumes the contents for the
         # references to _txt_ in the _interpret function
@@ -451,7 +451,7 @@ class Glyph(object):
                 link = dict(envs)['link']
                 if link in editors:
                     editor = editors[link]
-                    for char in charbuff:
+                    for char in charbuff: # this is a hack
                         mod = 0
                         if char.isupper(): mod = 3
                         event = Event(KEYDOWN, key=None, mod=mod,
