@@ -328,7 +328,7 @@ class Glyph(object):
         # return (environment type, environment) tuple (e.g (font, Font object))
 
         # re to get env arguments (arguments may be paths and contain \ or /)
-        r = re.compile('(\w+)\s+(((\"|\').*?(\"|\'))|(.*?;))')
+        r = re.compile('(\w+)\s+((\"|\').*?(\"|\')|.*?);')
         charbuffer = ''
         # _txt_ is a generator, so iterating consumes the contents for the
         # references to _txt_ in the _interpret function
@@ -363,7 +363,7 @@ class Glyph(object):
                     #editor is considered an environment because it must be
                     #linked.  any text in an editor environment is input to
                     #that editor, and any nested environments are ignored.
-                    name, w = env[1].split(',') 
+                    name, w = env[1].split(',')
                     #extract editor kw args
                     kw = dict(self._envs)
                     del kw['link']
