@@ -328,7 +328,7 @@ class Glyph(object):
         # return (environment type, environment) tuple (e.g (font, Font object))
 
         # re to get env arguments (arguments may be paths and contain \ or /)
-        r = re.compile('(\w+)\s+((\"|\').*?(\"|\')|.*?);')
+        r = re.compile('(\w+)(\s+((\"|\').*?(\"|\')|.*?))?;')
         charbuffer = ''
         # _txt_ is a generator, so iterating consumes the contents for the
         # references to _txt_ in the _interpret function
@@ -336,34 +336,34 @@ class Glyph(object):
             charbuffer += char
             s = r.search(charbuffer) # search for environment name arguments
             if s: # if search successful
-                env = s.groups() # get environment
-                env_ = env[0]
-                if env_ in Macros: return Macros[env_]
+                groups = s.groups() # get environment
+                env, args = groups[0], groups[2]
+                if env in Macros: return Macros[env]
                 # new environment types must be added here
 
-                elif env_ == 'bkg':
+                elif env == 'bkg':
                     # return new backgroun color
-                    return ('bkg', tuple([int(e) for e in env[1].split(',')]))
+                    return ('bkg', tuple([int(e) for e in args.split(',')]))
 
-                elif env_ == 'color':
+                elif env == 'color':
                     # return new font color
-                    return ('color', tuple([int(e) for e in env[1].split(',')]))
+                    return ('color', tuple([int(e) for e in args.split(',')]))
 
-                elif env_ == 'font':
+                elif env == 'font':
                     # return new font
-                    path, size = env[1].split(',') # the font location and size
+                    path, size = args.split(',') # the font location and size
                     return ('font', Font(os.path.realpath(path), int(size)))
 
-                elif env_ == 'link':
+                elif env == 'link':
                     # return new link
-                    return ('link', env[1].strip())
+                    return ('link', args.strip())
 
                 # FUTURE ###
-                elif env_ == 'editor':
+                elif env == 'editor':
                     #editor is considered an environment because it must be
                     #linked.  any text in an editor environment is input to
                     #that editor, and any nested environments are ignored.
-                    name, w = env[1].split(',')
+                    name, w = args.split(',')
                     #extract editor kw args
                     kw = dict(self._envs)
                     del kw['link']
@@ -376,7 +376,7 @@ class Glyph(object):
                 ############
 
                 else:
-                    raise ValueError(env[0] + ' is an unrecognized environment')
+                    raise ValueError(env + ' is an unrecognized environment')
 
 
     # the space func could take a size and return a surface or rect...
