@@ -124,7 +124,10 @@ PAGES = {
     '0' : """welcome to the glyph demo
 /n
 click {link startdemo; {green; here}} to learn about glyph and the glyph mini-language
+/n
 click {link editor; {green; here}} to see and use the editor
+/n
+press ESCAPE anytime to exit this demo
 """,
 
 
@@ -257,7 +260,7 @@ First Name: {editor first_name, 100; Omni}
 /n
 Last Name: {editor last_name, 100; Armstrong}
 /n
-hobbies: {editor hobbies, 500; programming, biking, gaming}
+hobbies: {editor hobbies, 200; programming, biking, gaming}
 /n
 fillable texts are technically environments (despite that they are not text attrtibutes but surfaces, which would generally be a function).  fillable texts are inserted with the following syntax:
 /space{10}/{editor name, width; default_text/}
@@ -275,7 +278,7 @@ class Main():
 #   Example usage of Glyph
 
     def __init__(self):
-        self.glyph = Glyph(CLIP, **DEFAULT)
+        self.glyph = Glyph(CLIP, ncols=2, **DEFAULT)
 
         Macros['b'] = ('font', Font(P_BOLD, 8))
         Macros['big'] = ('font', Font(P_REG, 16))

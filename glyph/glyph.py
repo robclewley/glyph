@@ -228,7 +228,8 @@ class _Line(Surface):
         # if justified: modify whitespace widths
         if justify == 'justified':
             # the amount to stretch whitespace
-            stretch = 1.0 + (freespace / total_whitespace)
+            if total_whitespace: stretch = 1.0 + (freespace / total_whitespace)
+            # if not total_whitespace, stretch will not be used.
 
             sub_w = 0
             for i, token in enumerate(line):
@@ -286,7 +287,8 @@ class Glyph(object):
 
     ##################################################################
     # class methods
-    def __init__(self, rect, bkg=BLACK, color=WHITE, font=FONT, spacing=0):
+    def __init__(self, rect, bkg=BLACK, color=WHITE, font=FONT, spacing=0,
+                 ncols=1, col_space=20): # FUTURE COLS ADD
         """
         Initialize a glyph object
 
@@ -308,6 +310,12 @@ class Glyph(object):
         # FUTURE ###
         self.editors = {}
         ############
+        # FUTURE COLS ###
+        self.col_w = (rect.w / ncols) - col_space
+        self.col_space = col_space
+        self.col_n = 1
+        self.ncols = ncols
+        #################
         self._dest = Rect(0, 0, 0, 0) # rect to blit a txt line to image surface
         # list of (env_id, value) pairs for environments;
         # _envs is used as a stack data structure
@@ -451,7 +459,8 @@ class Glyph(object):
                 link = dict(envs)['link']
                 if link in editors:
                     editor = editors[link]
-                    for char in charbuff: # this is a hack
+                    # this is a hack to feed char to editor using input method
+                    for char in charbuff:
                         mod = 0
                         if char.isupper(): mod = 3
                         event = Event(KEYDOWN, key=None, mod=mod,
@@ -459,7 +468,8 @@ class Glyph(object):
                         editor.input(event)
                     interpreted_txt.append((dict(envs), [editor.image]))
                 else: interpreted_txt.append((dict(envs), charbuff))
-                #interpreted_txt.append((dict(envs), charbuff))
+                #interpreted_txt.append((dict(envs), charbuff)) # FUTURE DEL
+                ############
                 charbuff = []
                 envs.pop()
 
@@ -503,7 +513,10 @@ class Glyph(object):
         # accepts a list of Token objects tuples
         # returns a list of Line objects, each wrapped to self.rect
         Line = _Line
-        rect_w = self.rect.w
+        # FUTURE COLS ###
+        rect_w = self.col_w
+        #rect_w = self.rect.w # FUTURE COLS DEL
+        #################
 
         # linesize tracks the current size of the rendered line because moving
         # between environments will mean that there will be multiple surfaces
@@ -582,20 +595,31 @@ class Glyph(object):
         spacing = self.spacing
         image, rect = self.image, self.rect
         editors, links = self.editors, self.links
+        # FUTURE COLS ###
+        ncols, col_n = self.ncols, self.col_n
+        col_w, col_space = self.col_w, self.col_space
+        #################
 
         while buff:
             line = buff.popleft()
             line_h = line.get_height()
             if dest.y + line_h > rect.h:
-                buff.append(line)
-                break
+                buff.appendleft(line)
+                # FUTURE COLS ###
+                if col_n < ncols:
+                    dest.move_ip(col_w+col_space, -dest.y)
+                    col_n += 1
+                else: break
+                # break # FUTURE COLS DEL
+                #################
             else:
                 image.blit(line, dest)
 
                 for link in line.links:
                     for _rect in line.links[link]:
                         # move rect to token's pos on image and append to links
-                        _rect.move_ip(dest.topleft)
+                        _rect.move_ip(dest.topleft) # FUTURE ADD
+                        # FUTURE DEL
                         #links[link].append(_rect.move(dest.topleft))
                         links[link].append(_rect)
                         # FUTURE ###
@@ -606,6 +630,10 @@ class Glyph(object):
 
         # FUTURE ###
         for editor in editors.values(): image.blit(editor.image, editor.rect)
+        ############
+        # FUTURE COLS ###
+        self.col_n = col_n
+        #################
 
 
     def clear(self, surface_dest, background):
@@ -623,6 +651,7 @@ class Glyph(object):
         self.image.fill(self._bkg)
         self._dest = Rect(0, 0, 0, 0)
         self.links = defaultdict(list)
+        self.col_n = 1
         surface_dest.blit(background, rect, rect)
 
 
