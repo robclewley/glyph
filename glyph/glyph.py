@@ -9,6 +9,7 @@ import re
 from collections import defaultdict, deque
 import os
 
+import pygame
 from pygame import font
 from pygame.event import Event
 from pygame.font import Font
@@ -412,7 +413,7 @@ class Glyph(object):
 
                 if func == 'space': return func, Surface((int(args), 1))
                 #"if charbuff = 'img'"?
-                if func == 'img': return func, image.load(args).convert()
+                if func == 'img': return func, pygame.image.load(args).convert()
 
 
     ##################################################################
