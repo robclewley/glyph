@@ -53,8 +53,8 @@ Macros = {}
 # private functions
 def _iswhitespace(char):
     # determine if char is whitespace
-    # accepts a char, if char is not a string then it is always
-    # considered whitespace
+    # accepts a char, if char is not a string then it is never
+    # considered whitespace (to prevent images from being stretched)
     # returns true if char is whitespace, else returns false
     whitespace = re.compile('\s+') # re to detect whitespace
     if not char: return True
@@ -637,7 +637,7 @@ class Glyph(object):
         #################
 
 
-    def clear(self, surface_dest, background):
+    def clear(self, *a):
         """
         draws background over surface_dest using self.rect and resets self._dest
 
@@ -647,13 +647,15 @@ class Glyph(object):
 
         returns nothing
         """
-        rect = self.rect
-        self.image = Surface(rect.size)
-        self.image.fill(self._bkg)
         self._dest = Rect(0, 0, 0, 0)
         self.links = defaultdict(list)
         self.col_n = 1
-        surface_dest.blit(background, rect, rect)
+        rect = self.rect
+        self.image = Surface(rect.size)
+        self.image.fill(self._bkg)
+        if a:
+            surface_dest, background = a
+            surface_dest.blit(background, rect, rect)
 
 
     def get_collisions(self, mpos):
