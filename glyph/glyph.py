@@ -269,7 +269,7 @@ class GlyphGroup(dict):
     from all Glyphs in the group"""
 
     def get_collisions(self, pos):
-        for k, v in self:
+        for k, v in self.items():
             link =  v.get_collisions(pos)
             if link: return k, link
         return None
