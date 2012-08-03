@@ -268,7 +268,7 @@ class GlyphGroup(dict):
     """a dictionary that assumes Glyphs as values.  adds methods to get links
     from all Glyphs in the group"""
 
-    def get_collisions(pos):
+    def get_collisions(self, pos):
         for k, v in self:
             link =  v.get_collisions(pos)
             if link: return k, link
