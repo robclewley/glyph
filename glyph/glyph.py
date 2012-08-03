@@ -272,7 +272,7 @@ class GlyphGroup(dict):
         for k, v in self.items():
             link =  v.get_collisions(pos)
             if link: return k, link
-        return None
+        return None, None
 
 
 

@@ -74,7 +74,7 @@ class EditorGroup(dict):
     def get_focus(self, pos):
         for k, v in self.items():
             if v.rect.collidepoint(pos): return k, v
-        return None
+        return None, None
 
 
 
