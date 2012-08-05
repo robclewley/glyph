@@ -325,7 +325,7 @@ class Glyph(object):
                       ('font', font),
                       ('link', None)] # link id string
 
-        self._buff = deque() # rendered text buffer
+        self.buff = deque() # rendered text buffer
 
 
     ##################################################################
@@ -575,7 +575,7 @@ class Glyph(object):
 
         returns nothing
         """
-        buff, interpret, tokenize, wrap = (self._buff, self._interpret,
+        buff, interpret, tokenize, wrap = (self.buff, self._interpret,
                                            self._tokenize, self._wrap)
         interpreted_txt = interpret(txt)
         tokens = tokenize(interpreted_txt)
@@ -592,7 +592,7 @@ class Glyph(object):
 
         returns nothing
         """
-        buff, dest = self._buff, self._dest
+        buff, dest = self.buff, self._dest
         spacing = self.spacing
         image, rect = self.image, self.rect
         editors, links = self.editors, self.links
