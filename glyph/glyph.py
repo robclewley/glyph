@@ -618,7 +618,7 @@ class Glyph(object):
                     col_n += 1
                 else:
                     stderr.write(WARN_BUFF)
-                    break
+                    return 0
                 # break # FUTURE COLS DEL
                 #################
             else:
@@ -643,6 +643,7 @@ class Glyph(object):
         # FUTURE COLS ###
         self.col_n = col_n
         #################
+        return 1
 
 
     def clear(self, *a):
