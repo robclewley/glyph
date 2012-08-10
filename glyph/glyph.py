@@ -274,6 +274,8 @@ class GlyphGroup(dict):
             if link: return k, link
         return None, None
 
+    def draw(self, surface):
+        for v in self.values(): surface.blit(v.image, v.rect)
 
 
 class Glyph(object):
@@ -647,12 +649,15 @@ class Glyph(object):
 
         returns nothing
         """
+        # reset glyph
         self._dest = Rect(0, 0, 0, 0)
         self.links = defaultdict(list)
         self.col_n = 1
+        self.buff = deque()
         rect = self.rect
         self.image = Surface(rect.size)
         self.image.fill(self._bkg)
+        # if provided, clear a surface at glyph rect
         if a:
             surface_dest, background = a
             surface_dest.blit(background, rect, rect)
