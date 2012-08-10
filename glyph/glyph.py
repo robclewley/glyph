@@ -41,7 +41,7 @@ SPECIALS = ['/', '{', '}']
 WHITESPACE = {'n' : '\n'}
 WARN_BUFF = '''\
 Warning: buffer not emptied, try increasing rect height or rect width and add
-more columns'''
+more columns\n'''
 
 
 
