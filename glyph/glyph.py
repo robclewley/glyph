@@ -8,6 +8,7 @@ from __future__ import division
 import re
 from collections import defaultdict, deque
 import os
+from sys import stderr
 
 import pygame
 from pygame import font
@@ -38,6 +39,9 @@ WHITE = (255, 255, 255)
 FONT = Font(None, 8)
 SPECIALS = ['/', '{', '}']
 WHITESPACE = {'n' : '\n'}
+WARN_BUFF = '''\
+Warning: buffer not emptied, try increasing rect height or rect width and add
+more columns'''
 
 
 
@@ -612,7 +616,9 @@ class Glyph(object):
                 if col_n < ncols:
                     dest.move_ip(col_w+col_space, -dest.y)
                     col_n += 1
-                else: break
+                else:
+                    stderr.write(WARN_BUFF)
+                    break
                 # break # FUTURE COLS DEL
                 #################
             else:
