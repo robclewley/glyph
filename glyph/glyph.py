@@ -216,6 +216,10 @@ class _Line(Surface):
         # get the line width, line height, whitespace used in the line, and
         # freespace remaining in the line
         line_w = sum(token.get_width() for token in line)
+        ### FUTURE center
+        # line_cw = sum(token.get_width() for token in line if not token.center)
+        # iine_w - line_cw
+        # if line_cw: line_w = line_cw
         line_h = max(token.get_height() for token in line)
         total_whitespace = sum(token.get_width() for token in line
                                if token.iswhitespace)
@@ -318,7 +322,7 @@ class Glyph(object):
         self.editors = {}
         ############
         # FUTURE COLS ###
-        self.col_w = (rect.w / ncols) - col_space
+        self.col_w = ((rect.w -col_space) / ncols) - col_space
         self.col_space = col_space
         self.col_n = 1
         self.ncols = ncols
