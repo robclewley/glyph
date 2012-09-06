@@ -322,7 +322,7 @@ class Glyph(object):
         self.editors = {}
         ############
         # FUTURE COLS ###
-        self.col_w = ((rect.w -col_space) / ncols) - col_space
+        self.col_w = ((rect.w + col_space) / ncols) - col_space
         self.col_space = col_space
         self.col_n = 1
         self.ncols = ncols
