@@ -572,7 +572,7 @@ class Glyph(object):
 
     ##################################################################
     # public methods
-    def input(self, txt, justify=None, update=False):
+    def input(self, txt, justify=None, update=True):
         """
         interprets, renders, wraps, and justifies input text
 
