@@ -572,7 +572,7 @@ class Glyph(object):
 
     ##################################################################
     # public methods
-    def input(self, txt, justify = None):
+    def input(self, txt, justify=None, update=False):
         """
         interprets, renders, wraps, and justifies input text
 
@@ -591,6 +591,12 @@ class Glyph(object):
         tokens = tokenize(interpreted_txt)
         lines = wrap(tokens, justify)
         buff.extend(lines)
+        if update: self.update()
+
+
+    def overwrite(self, txt, **kw):
+        self.clear()
+        self.input(txt, **kw)
 
 
     def update(self):
