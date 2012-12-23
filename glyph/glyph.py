@@ -285,6 +285,9 @@ class GlyphGroup(dict):
     def draw(self, surface):
         for v in self.values(): surface.blit(v.image, v.rect)
 
+    def update(self):
+        for v in self.values(): v.update()
+
 
 class Glyph(object):
     """
